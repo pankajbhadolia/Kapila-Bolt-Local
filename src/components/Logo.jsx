@@ -3,10 +3,9 @@ function Logo() {
     <div className="logo-container">
       <img 
         src="https://raw.githubusercontent.com/kapila-dairy/assets/main/logo.png" 
-        alt="Kapila Dairy Directory" 
+        alt="Logo" 
         className="logo"
       />
-      <h1 className="brand-name">Kapila Dairy Directory</h1>
     </div>
   )
 }
