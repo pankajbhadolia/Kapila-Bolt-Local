@@ -24,21 +24,25 @@ function Login() {
 
       if (error) throw error
 
-      // Check user role and redirect accordingly
-      const { data: profile } = await supabase
+      // Fetch user profile to get role
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', data.user.id)
         .single()
 
+      if (profileError) throw profileError
+
       toast.success('Logged in successfully!')
       
+      // Redirect based on role
       if (profile.role === 'admin') {
         navigate('/admin')
       } else {
         navigate('/dashboard')
       }
     } catch (error) {
+      console.error('Login error:', error)
       toast.error(error.message)
     } finally {
       setLoading(false)

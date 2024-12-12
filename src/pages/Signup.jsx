@@ -30,30 +30,42 @@ function Signup() {
         password: formData.password,
         options: {
           data: {
-            name: formData.name
+            name: formData.name,
+            role: 'user'
           }
         }
       })
 
       if (authError) throw authError
 
-      // Insert into profiles table
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            id: authData.user.id,
-            name: formData.name,
-            email: formData.email,
-            role: 'user'
-          }
-        ])
+      if (authData && authData.user) {
+        // Get the session
+        const { data: sessionData } = await supabase.auth.getSession()
+        
+        if (sessionData?.session) {
+          // Insert into profiles table
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([
+              {
+                id: authData.user.id,
+                name: formData.name,
+                email: formData.email,
+                role: 'user'
+              }
+            ])
 
-      if (profileError) throw profileError
+          if (profileError) throw profileError
+        }
 
-      toast.success('Registration successful! Please check your email for verification.')
-      navigate('/')
+        // Sign out after profile creation
+        await supabase.auth.signOut()
+        
+        toast.success('Registration successful! Please login to continue.')
+        navigate('/')
+      }
     } catch (error) {
+      console.error('Signup error:', error)
       toast.error(error.message)
     } finally {
       setLoading(false)
